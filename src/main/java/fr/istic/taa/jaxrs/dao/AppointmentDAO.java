@@ -19,6 +19,14 @@ public class AppointmentDAO extends AbstractJpaDao<Long, Appointment> {
         manager.persist(new Appointment(reason, startingTime, patient, professional));
         tx.commit();
     }
+
+    public void addAppointment(Appointment appointment) {
+        var tx = manager.getTransaction();
+        tx.begin();
+        manager.persist(appointment);
+        tx.commit();
+    }
+
     // Access appointments
     public List<Appointment> getAppointmentsByProfessionalId(Long id) {
         return manager.createQuery("SELECT p FROM Appointment p WHERE p.professional.id = :id", Appointment.class)
@@ -44,4 +52,5 @@ public class AppointmentDAO extends AbstractJpaDao<Long, Appointment> {
         manager.createQuery("DELETE FROM Appointment a WHERE a.id = :id")
                 .setParameter("id", id);
     }
+
 }
