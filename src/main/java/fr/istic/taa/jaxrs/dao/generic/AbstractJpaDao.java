@@ -10,45 +10,56 @@ public abstract class AbstractJpaDao<K, T extends Serializable> implements IGene
 
 	private Class<T> clazz;
 
-	protected EntityManager entityManager;
+	protected EntityManager manager;
 
-	public AbstractJpaDao() {
-		this.entityManager = EntityManagerHelper.getEntityManager();
-	}
-
-	public void setClazz(Class<T> clazzToSet) {
-		this.clazz = clazzToSet;
+	public AbstractJpaDao(Class<T> clazz) {
+		this.clazz = clazz;
+		this.manager = EntityManagerHelper.getEntityManager();
 	}
 
 	public T findOne(K id) {
-		return entityManager.find(clazz, id);
+		return manager.find(clazz, id);
 	}
 
 	public List<T> findAll() {
-		return entityManager.createQuery("select e from " + clazz.getName() + " as e",clazz).getResultList();
+		return manager.createQuery("select e from " + clazz.getName() + " as e",clazz).getResultList();
 	}
 
 	public void save(T entity) {
-		EntityTransaction t = this.entityManager.getTransaction();
+		EntityTransaction t = this.manager.getTransaction();
 		t.begin();
-		entityManager.persist(entity);
+		manager.persist(entity);
 		t.commit();
 
 	}
 
 	public T update(final T entity) {
-		EntityTransaction t = this.entityManager.getTransaction();
+		EntityTransaction t = this.manager.getTransaction();
 		t.begin();
-		T res = entityManager.merge(entity);
+		T res = manager.merge(entity);
 		t.commit();
 		return res;
 
 	}
 
+	public List<T> getAll() {
+		return this.manager
+				.createQuery("select obj from " + this.clazz.getName() + " obj", clazz)
+				.getResultList();
+	}
+
+	public T getById(K id) {
+		return this.manager.find(this.clazz, id);
+	}
+
+	public boolean exists(K id) {
+		return this.manager.find(this.clazz, id) != null;
+	}
+
 	public void delete(T entity) {
-		EntityTransaction t = this.entityManager.getTransaction();
+		EntityTransaction t = this.manager.getTransaction();
 		t.begin();
-		entityManager.remove(entity);
+		manager.remove(entity);
 		t.commit();
 
 	}
