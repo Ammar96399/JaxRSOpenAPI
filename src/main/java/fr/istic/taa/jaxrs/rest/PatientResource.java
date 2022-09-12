@@ -21,10 +21,10 @@ public class PatientResource {
     @POST
     @Consumes("application/json")
     public Response addPatient(
-            @Parameter(description="Patient object that needs to be added to the store", required = true) String firstname, String lastName
+            @Parameter(description="Patient object that needs to be added to the store", required = true) Patient patient
     ) {
         var patientDao = new PatientDAO();
-        patientDao.createPatients(firstname, lastName);
+        patientDao.createPatients(patient);
         return Response.ok().entity("SUCCESS").build();
     }
 

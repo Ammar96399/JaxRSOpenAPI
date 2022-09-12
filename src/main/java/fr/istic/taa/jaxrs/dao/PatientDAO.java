@@ -13,9 +13,9 @@ public class PatientDAO extends AbstractJpaDao<Long, Patient> {
 
     // Create queries
 
-    public void createPatients(String firstName, String lastName) {
+    public void createPatients(Patient patient) {
         manager.getTransaction().begin();
-        manager.persist(new Patient(firstName, lastName));
+        manager.persist(patient);
         manager.getTransaction().commit();
     }
 

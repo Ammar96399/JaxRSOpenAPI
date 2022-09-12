@@ -13,7 +13,7 @@ import java.io.PrintWriter;
 @WebServlet(name="ProfessionalAdd",
         urlPatterns={"/ProfessionalAdd"})
 public class ProfessionalAdd extends HttpServlet {
-    @Override
+    /*@Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html");
 
@@ -27,5 +27,5 @@ public class ProfessionalAdd extends HttpServlet {
         dao.createProfessional(lastname, firstname);
 
         out.println("Ajout d'un professionnel avec succès.");
-    }
+    }*/
 }

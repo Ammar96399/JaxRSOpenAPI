@@ -1,12 +1,10 @@
-/*C1*/SET SCHEMA SYSTEM_LOBS
-INSERT INTO BLOCKS VALUES(0,2147483647,0)
+/*C7*/SET SCHEMA PUBLIC
+DISCONNECT
+/*C8*/SET SCHEMA PUBLIC
+DISCONNECT
+/*C10*/SET SCHEMA PUBLIC
+INSERT INTO PATIENT VALUES('Patient',2,'Ammar','Kazem',NULL,NULL,NULL)
+ALTER SEQUENCE PUBLIC.HIBERNATE_SEQUENCE RESTART WITH 3
 COMMIT
-/*C2*/SET SCHEMA PUBLIC
-create table Appointment (id bigint not null, reason varchar(255), startingTime timestamp, patient_id bigint, professional_id bigint, primary key (id))
-create table Patient (DTYPE varchar(31) not null, id bigint not null, firstName varchar(255), lastName varchar(255), age integer, parentName varchar(255), professional_id bigint, primary key (id))
-create table Professional (id bigint not null, firstName varchar(255), lastName varchar(255), primary key (id))
-create sequence hibernate_sequence start with 1 increment by 1
-alter table Appointment add constraint FKfhg8dxc8emt4u70sonm2xqxnr foreign key (patient_id) references Patient
-alter table Appointment add constraint FKqoiirlu0wqyd63mkdd4rxa13t foreign key (professional_id) references Professional
-alter table Patient add constraint FKib5dnlmrexp546ml8cmxtqq0h foreign key (professional_id) references Professional
+/*C11*/SET SCHEMA PUBLIC
 DISCONNECT

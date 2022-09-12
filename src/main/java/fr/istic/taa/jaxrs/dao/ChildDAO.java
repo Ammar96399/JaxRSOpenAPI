@@ -11,10 +11,10 @@ public class ChildDAO extends AbstractJpaDao<Long, Child> {
         super(Child.class);
     }
 
-    public void createChild(String firstName, String lastName, String parentName, Integer age) {
+    public void createChild(Child child) {
         var tx = manager.getTransaction();
         tx.begin();
-        manager.persist(new Child(firstName, lastName, parentName, age));
+        manager.persist(child);
         tx.commit();
     }
 
