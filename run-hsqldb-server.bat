@@ -1,3 +1,3 @@
+mkdir data
 cd data
-
-java -cp ..\dependency\hsqldb-2.5.1.jar org.hsqldb.Server
+java -cp ..\hsqldb-2.5.1.jar org.hsqldb.Server
