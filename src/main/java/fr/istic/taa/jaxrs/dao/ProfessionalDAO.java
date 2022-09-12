@@ -20,6 +20,13 @@ public class ProfessionalDAO extends AbstractJpaDao<Long, Professional> {
         tx.commit();
     }
 
+    public void createProfessional(Professional professional) {
+        var tx = manager.getTransaction();
+        tx.begin();
+        manager.persist(professional);
+        tx.commit();
+    }
+
     // Get
 
     public List<Professional> getPatientByName(String firstName, String lastName) {
@@ -43,4 +50,5 @@ public class ProfessionalDAO extends AbstractJpaDao<Long, Professional> {
                 .setParameter("lastName", lastName)
                 .setParameter("firstName", firstName);
     }
+
 }
