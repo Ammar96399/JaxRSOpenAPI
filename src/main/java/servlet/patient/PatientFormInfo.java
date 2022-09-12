@@ -14,7 +14,7 @@ import java.io.PrintWriter;
         urlPatterns={"/PatientAdd"})
 public class PatientFormInfo extends HttpServlet {
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    /*public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html");
 
         PrintWriter out = response.getWriter();
@@ -25,5 +25,5 @@ public class PatientFormInfo extends HttpServlet {
         var patientDao = new PatientDAO();
 
         patientDao.createPatients(firstname, lastname);
-    }
+    }*/
 }

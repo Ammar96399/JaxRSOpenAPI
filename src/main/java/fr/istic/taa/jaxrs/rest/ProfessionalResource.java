@@ -29,15 +29,6 @@ public class ProfessionalResource {
         return Response.ok().entity("Success").build();
     }
 
-    @POST
-    @Consumes("application/json")
-    public Response addProfessionalByNames(
-            @Parameter(description = "Professional object that needs to be added to the store", required = true) String firstname, String lastname) {
-        var dao = new ProfessionalDAO();
-        dao.createProfessional(firstname, lastname);
-        return Response.ok().entity("Success").build();
-    }
-
     @GET
     public List<Professional> getProfessionals() {
         var dao = new ProfessionalDAO();

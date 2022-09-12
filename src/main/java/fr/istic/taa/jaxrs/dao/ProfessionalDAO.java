@@ -13,13 +13,6 @@ public class ProfessionalDAO extends AbstractJpaDao<Long, Professional> {
 
     // Create
 
-    public void createProfessional(String firstName, String lastName) {
-        var tx = manager.getTransaction();
-        tx.begin();
-        manager.persist(new Professional(firstName, lastName));
-        tx.commit();
-    }
-
     public void createProfessional(Professional professional) {
         var tx = manager.getTransaction();
         tx.begin();
