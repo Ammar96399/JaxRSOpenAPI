@@ -3,6 +3,7 @@ package fr.istic.taa.jaxrs.rest;
 import fr.istic.taa.jaxrs.dao.ChildDAO;
 import fr.istic.taa.jaxrs.domain.Child;
 import fr.istic.taa.jaxrs.domain.Patient;
+import fr.istic.taa.jaxrs.exceptions.ValueAlreadyExistsException;
 import io.swagger.v3.oas.annotations.Parameter;
 
 import javax.ws.rs.*;
@@ -13,9 +14,13 @@ import javax.ws.rs.core.Response;
 public class ChildResource {
     @GET
     @Path("/{childId}")
-    public Patient getChildById(@PathParam("childId") Long childId) {
-        var childDao = new ChildDAO();
-        return childDao.getById(childId);
+    public Response getChildById(@PathParam("childId") Long childId) {
+        try {
+            var childDao = new ChildDAO();
+            return Response.ok().entity(childDao.getById(childId)).build();
+        } catch (NotFoundException e) {
+            return Response.noContent().entity(e.getMessage()).build();
+        }
     }
 
     @POST
@@ -23,9 +28,13 @@ public class ChildResource {
     public Response addChild(
             @Parameter(description="Patient object that needs to be added to the store", required = true) Child child
     ) {
-        var childDAO = new ChildDAO();
-        childDAO.createChild(child);
-        return Response.ok().entity("SUCCESS").build();
+        try {
+            var childDAO = new ChildDAO();
+            childDAO.createChild(child);
+            return Response.ok().entity("SUCCESS").build();
+        } catch (ValueAlreadyExistsException e) {
+            return Response.status(409).entity(e.getMessage()).build();
+        }
     }
 
     @DELETE

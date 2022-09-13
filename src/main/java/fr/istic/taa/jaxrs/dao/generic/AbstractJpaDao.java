@@ -2,9 +2,11 @@ package fr.istic.taa.jaxrs.dao.generic;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.ws.rs.NotFoundException;
 
 public abstract class AbstractJpaDao<K, T extends Serializable> implements IGenericDao<K, T> {
 
@@ -48,8 +50,13 @@ public abstract class AbstractJpaDao<K, T extends Serializable> implements IGene
 				.getResultList();
 	}
 
-	public T getById(K id) {
-		return this.manager.find(this.clazz, id);
+	public T getById(K id) throws NotFoundException {
+		var res = this.manager.find(this.clazz, id);
+		if (Objects.nonNull(res)) {
+			return res;
+		} else {
+			throw new NotFoundException("Cannot find the requested resource bound by id");
+		}
 	}
 
 	public boolean exists(K id) {
