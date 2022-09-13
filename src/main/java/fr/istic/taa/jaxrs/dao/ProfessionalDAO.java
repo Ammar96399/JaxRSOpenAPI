@@ -22,7 +22,7 @@ public class ProfessionalDAO extends AbstractJpaDao<Long, Professional> {
 
     // Get
 
-    public List<Professional> getPatientByName(String firstName, String lastName) {
+    public List<Professional> getProfessionalByName(String firstName, String lastName) {
         return manager
                 .createQuery("SELECT p FROM Professional p WHERE p.lastName LIKE :lastName AND p.firstName LIKE :firstName", Professional.class)
                 .setParameter("firstName", firstName)
