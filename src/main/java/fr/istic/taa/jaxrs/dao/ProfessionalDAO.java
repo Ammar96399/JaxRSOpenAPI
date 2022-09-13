@@ -1,8 +1,11 @@
 package fr.istic.taa.jaxrs.dao;
 
 import fr.istic.taa.jaxrs.dao.generic.AbstractJpaDao;
+import fr.istic.taa.jaxrs.domain.Child;
 import fr.istic.taa.jaxrs.domain.Professional;
+import fr.istic.taa.jaxrs.exceptions.ValueAlreadyExistsException;
 
+import javax.ws.rs.NotFoundException;
 import java.util.List;
 
 public class ProfessionalDAO extends AbstractJpaDao<Long, Professional> {
@@ -13,7 +16,10 @@ public class ProfessionalDAO extends AbstractJpaDao<Long, Professional> {
 
     // Create
 
-    public void createProfessional(Professional professional) {
+    public void createProfessional(Professional professional) throws ValueAlreadyExistsException {
+        if (manager.contains(professional)) {
+            throw new ValueAlreadyExistsException("The professional object is already inserted.");
+        }
         var tx = manager.getTransaction();
         tx.begin();
         manager.persist(professional);
@@ -39,9 +45,17 @@ public class ProfessionalDAO extends AbstractJpaDao<Long, Professional> {
     // Remove queries
 
     public void removeProfessionalByName(String firstName, String lastName) {
-        this.manager.createQuery("delete from Professional p where p.firstName = :firstName and p.lastName = :lastName")
-                .setParameter("lastName", lastName)
-                .setParameter("firstName", firstName);
+        var res = manager.createQuery("select c from Professional c where c.firstName like :first and c.lastName like :last", Professional.class)
+                .setParameter("first", firstName)
+                .setParameter("last", lastName)
+                .getResultList();
+        if (res.isEmpty()) {
+            throw new NotFoundException("The requested professional could not be find.");
+        } else {
+            this.manager.createQuery("delete from Professional p where p.firstName = :firstName and p.lastName = :lastName")
+                    .setParameter("lastName", lastName)
+                    .setParameter("firstName", firstName);
+        }
     }
 
 }

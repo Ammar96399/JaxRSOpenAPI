@@ -4,6 +4,7 @@ import fr.istic.taa.jaxrs.dao.AppointmentDAO;
 import fr.istic.taa.jaxrs.domain.Appointment;
 import fr.istic.taa.jaxrs.domain.Patient;
 import fr.istic.taa.jaxrs.domain.Professional;
+import fr.istic.taa.jaxrs.exceptions.ValueAlreadyExistsException;
 import org.checkerframework.checker.units.qual.A;
 
 import java.time.LocalDateTime;
@@ -17,11 +18,11 @@ public class AppointmentService {
         this.appointmentDAO = new AppointmentDAO();
     }
 
-    public void addAppointment(String reason, LocalDateTime startingTime, Patient patient, Professional professional) {
+    public void addAppointment(String reason, LocalDateTime startingTime, Patient patient, Professional professional) throws ValueAlreadyExistsException {
         appointmentDAO.addAppointment(reason, startingTime, patient, professional);
     }
 
-    public void addAppointment(Appointment appointment) {
+    public void addAppointment(Appointment appointment) throws ValueAlreadyExistsException {
         appointmentDAO.addAppointment(appointment);
     }
 

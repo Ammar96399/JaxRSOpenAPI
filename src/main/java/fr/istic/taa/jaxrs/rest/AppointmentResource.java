@@ -6,12 +6,14 @@ import fr.istic.taa.jaxrs.domain.Appointment;
 import fr.istic.taa.jaxrs.domain.Patient;
 import fr.istic.taa.jaxrs.domain.Pet;
 import fr.istic.taa.jaxrs.domain.Professional;
+import fr.istic.taa.jaxrs.exceptions.ValueAlreadyExistsException;
 import io.swagger.v3.oas.annotations.Parameter;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Path("/appointment")
 @Produces({"application/json", "application/xml"})
@@ -19,9 +21,14 @@ public class AppointmentResource {
 
     @GET
     @Path("{appId}")
-    public Appointment getProfessionalById(@PathParam("appId") Long appId) {
+    public Response getProfessionalById(@PathParam("appId") Long appId) {
         var dao = new AppointmentDAO();
-        return dao.getById(appId);
+        var res = dao.getById(appId);
+        if (Objects.nonNull(res)) {
+            return Response.ok().entity(res).build();
+        } else {
+            return Response.status(404).build();
+        }
     }
 
     @POST
@@ -29,8 +36,12 @@ public class AppointmentResource {
     public Response addAppointment(
             @Parameter(description = "Appointment object that needs to be added to the store", required = true) Appointment appointment) {
         var dao = new AppointmentDAO();
-        dao.addAppointment(appointment);
-        return Response.ok().entity("Success").build();
+        try {
+            dao.addAppointment(appointment);
+            return Response.ok().entity("Success").build();
+        } catch (ValueAlreadyExistsException e) {
+            return Response.status(409).entity(e.getMessage()).build();
+        }
     }
 
     @POST
@@ -39,8 +50,12 @@ public class AppointmentResource {
             @Parameter(description = "Appointment object that needs to be added to the store", required = true)
                 String reason, LocalDateTime startingTime, Patient patient, Professional professional) {
         var dao = new AppointmentDAO();
-        dao.addAppointment(reason, startingTime, patient, professional);
-        return Response.ok().entity("Success").build();
+        try {
+            dao.addAppointment(reason, startingTime, patient, professional);
+            return Response.ok().entity("Success").build();
+        } catch (ValueAlreadyExistsException e) {
+            return Response.status(409).entity(e.getMessage()).build();
+        }
     }
 
     @GET

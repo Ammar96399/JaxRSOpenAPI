@@ -2,6 +2,7 @@ package fr.istic.taa.jaxrs.service;
 
 import fr.istic.taa.jaxrs.dao.PatientDAO;
 import fr.istic.taa.jaxrs.domain.Patient;
+import fr.istic.taa.jaxrs.exceptions.ValueAlreadyExistsException;
 
 import java.util.List;
 
@@ -10,6 +11,10 @@ public class PatientService {
 
     public PatientService() {
         this.patientDAO = new PatientDAO();
+    }
+
+    public void createPatient(Patient patient) throws ValueAlreadyExistsException {
+        patientDAO.createPatients(patient);
     }
 
     public List<Patient> getPatientByName(String firstName, String lastName) {
