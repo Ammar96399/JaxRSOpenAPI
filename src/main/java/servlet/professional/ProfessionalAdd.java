@@ -1,6 +1,8 @@
 package servlet.professional;
 
 import fr.istic.taa.jaxrs.dao.ProfessionalDAO;
+import fr.istic.taa.jaxrs.domain.Professional;
+import fr.istic.taa.jaxrs.exceptions.ValueAlreadyExistsException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,7 +15,7 @@ import java.io.PrintWriter;
 @WebServlet(name="ProfessionalAdd",
         urlPatterns={"/ProfessionalAdd"})
 public class ProfessionalAdd extends HttpServlet {
-    /*@Override
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html");
 
@@ -24,8 +26,12 @@ public class ProfessionalAdd extends HttpServlet {
 
         var dao = new ProfessionalDAO();
 
-        dao.createProfessional(lastname, firstname);
+        try {
+            dao.createProfessional(new Professional(lastname, firstname));
+        } catch (ValueAlreadyExistsException e) {
+            e.printStackTrace();
+        }
 
         out.println("Ajout d'un professionnel avec succès.");
-    }*/
+    }
 }
