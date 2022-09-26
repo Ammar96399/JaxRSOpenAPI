@@ -1,150 +1,43 @@
-## JaxRS + openAPI
+## TAA Lab 2 - From servlets to Webservice
 
-1. Import this project in your IDE, 
-2. Start the database
-3. Start the database viewer
-4. Start the backend. There is a main class to start the backend
+### Presentation
 
+This is the repo for the second lab of the course.
 
+The goal of this lab is to work with the notion of servlet, in a small case study, then combine the servlet with JPA to produce a webservice application, and finally integrate with these the REST API and swagger.
 
+### Structure
 
-# Task Open API Integration 
+This repo could be mainly divided into business layer and servlet layer and other utilities.
 
-Now, we would like to ensure that our API can be discovered. The OpenAPI Initiative (OAI) was created by a consortium of forward-looking industry experts who recognize the immense value of standardizing on how REST APIs are described. As an open governance structure under the Linux Foundation, the OAI is focused on creating, evolving and promoting a vendor neutral description format. 
+The business layer is located in `jaxrs` package and contains the following parts:
 
-APIs form the connecting glue between modern applications. Nearly every application uses APIs to connect with corporate data sources, third party data services or other applications. Creating an open description format for API services that is vendor neutral, portable and open is critical to accelerating the vision of a truly connected world.
+-   Persistent objects, aka models, are simply data classes with adequate JPA annotations, especially the `OneToMany` and `ManyToOne` relations.
 
-To do this integration first, I already add a dependencies to openAPI libraries. 
+    In our case, we have created models to reflect a medical appointment system.
 
-```xml
-			<dependency>
-			<groupId>io.swagger.core.v3</groupId>
-			<artifactId>swagger-jaxrs2</artifactId>
-			<version>2.1.4</version>
-		</dependency>
-		<dependency>
-			<groupId>io.swagger.core.v3</groupId>
-			<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
-			<version>2.1.4</version>
-		</dependency>
-```
+-    DAOs, each model is linked to a DAO where various CRUD operations are defined. These operations calls the `EntityManager` in JPA to handle a certain logic that is expressed by a SQL query.
 
-Next you have to add OpenAPI Resource to your application
+     The `EntityManager` has been encapsulated into a singleton in a thread-safe way and we have also made usage of generics to create a DAO that enables several operations by default.
 
-Your application could be something like that. 
+-   Service layer, which dispatches method calls to operations in DAOs.
 
-```java
-@ApplicationPath("/")
-public class RestApplication extends Application {
+-   REST resources, each resource is an entrypoint that is linked to a certain model and contains several methods that have likely a path and consume/produce some data.
 
-	@Override
-	public Set<Class<?>> getClasses() {
-		final Set<Class<?>> resources = new HashSet<>();
+    In the body of these methods, some verifications are done and different responses are produced regarding different scenarii, e.g. if the resource is fetched, or there is no such resource ...
 
+    We have made our own exception class to handle some specific error cases, don't know if this is the good way. In these functions, the updates to the models are dispatched to DAOs, it would be better to make usage of Service layers instead of calling directly DAOs.
 
-		// SWAGGER endpoints
-		resources.add(OpenApiResource.class);
+    There is also a resource that is created for swagger to make it possible to expose the API structures.
 
-        //Your own resources. 
-        resources.add(PersonResource.class);
-....
-		return resources;
-	}
-}
-```
+### Usage
 
-Next start your server, you must have your api description available at [http://localhost:8080/openapi.json](http://localhost:8080/openapi.json)
+First run the h2 sql DB with the `run-hsqldb-server.bat` or `run-hsqldb-server.sh` depending on the OS.
 
-### Integrate Swagger UI. 
+Then launch the `RestServer` class in `jaxrs` package, either with IDEA or in terminal console.
 
-Next we have to integrate Swagger UI. We will first download it.
-https://github.com/swagger-api/swagger-ui
+The list of available APIs could be found in `http://localhost:8080/api`.
 
-Copy dist folder content in src/main/webapp/swagger in your project. 
+### Remark
 
-Edit index.html file to automatically load your openapi.json file. 
-
-At the end of the index.html, your must have something like that.
-
-```js
-   // Build a system
-      const ui = SwaggerUIBundle({
-        url: "http://localhost:8080/openapi.json",
-        dom_id: '#swagger-ui',
-        
-        ...
-```
-
-Next add a new resources to create a simple http server when your try to access to http://localhost:8080/api/.
-
-This new resources can be developped as follows
-
-```java
-package app.web.rest;
-
-import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.util.logging.Logger;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-
-@Path("/api")
-public class SwaggerResource {
-
-    private static final Logger logger = Logger.getLogger(SwaggerResource.class.getName());
-
-    @GET
-    public byte[] Get1() {
-        try {
-            return Files.readAllBytes(FileSystems.getDefault().getPath("src/main/webapp/swagger/index.html"));
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    @GET
-    @Path("{path:.*}")
-    public byte[] Get(@PathParam("path") String path) {
-        try {
-            return Files.readAllBytes(FileSystems.getDefault().getPath("src/main/webapp/swagger/"+path));
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-}
-```
-
-Add this new resources in your application
-
-```java
-@ApplicationPath("/")
-public class RestApplication extends Application {
-
-
-	@Override
-	public Set<Class<?>> getClasses() {
-		final Set<Class<?>> resources = new HashSet<>();
-
-
-		// SWAGGER endpoints
-		resources.add(OpenApiResource.class);
-		resources.add(PersonResource.class);
-        //NEW LINE TO ADD
-		resources.add(SwaggerResource.class);
-
-		return resources;
-	}
-}
-```
-
-Restart your server and access to http://localhost:8080/api/, you should access to a swagger ui instance that provides documentation on your api. 
-
-You can follow this guide to show how you can specialise the documentation through annotations.
-
-https://github.com/swagger-api/swagger-samples/blob/2.0/java/java-resteasy-appclasses/src/main/java/io/swagger/sample/resource/PetResource.java
-
-(Fin)
+In the lab 1 we have seen how writing a servlet without any framework could be really cumbersome and diffcult for debugging and testing. The REST API and JAXRS have largely helped, notably by allowing to define routing roles in a simpler and intuitive way. However, writing DAOs and Resource layer could still be error prone, especially when handling null or empty values or facing type mismatches. We will see in the next lab how more curated framework such as spring boot could help resolve this.
